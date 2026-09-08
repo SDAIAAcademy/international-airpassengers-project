@@ -1,0 +1,45 @@
+# Publish index.html to GitHub Pages.
+#
+# `configure-pages` with `enablement: true` turns Pages ON through the API using
+# this workflow's own token, so the site goes live without anyone opening the
+# Settings screen. Nothing is built: the repository root is uploaded as-is, and
+# `index.html` is already committed.
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; a newer push waits rather than cancelling a live one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enable Pages and read its settings
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload the repository root
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
