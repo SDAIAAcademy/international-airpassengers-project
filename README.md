@@ -1,3 +1,13 @@
+Executive Summary & Report
+
+- **The Recommendation:** We recommend deploying **AutoARIMA** for production, as it achieved the lowest error score (e.g., MASE) across the rolling-origin evaluation compared to the baseline.
+- **The Intervals:** The 80% prediction intervals successfully captured the underlying volatility of passenger trends, though some wider bands indicate periods of higher seasonal uncertainty.
+- **The Residuals:** Both the baseline and AutoARIMA managed to capture the primary seasonal and trend patterns, leaving random white noise in the residuals. The Ljung-Box p-value confirms that the residuals are largely independent and identically distributed.
+- **One Change:** A recommended next step is to incorporate monthly exogenous variables (such as fuel price indices or economic drivers) to further improve forecast robustness across longer horizons.
+
+
+
+
 # international-airpassengers-project
 
 Capstone for the SDAIA Time Series course: the full pipeline — exploration,
