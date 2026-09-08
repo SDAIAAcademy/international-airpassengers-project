@@ -1,5 +1,7 @@
 # international-airpassengers-project
 
+https://up2u2b11.github.io/international-airpassengers-project/
+
 Capstone for the SDAIA Time Series course: the full pipeline — exploration,
 decomposition, benchmark floor, model through the framework (AutoGluon),
 cross-validation, report — on the Box & Jenkins AirPassengers series
