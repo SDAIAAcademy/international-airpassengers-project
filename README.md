@@ -1,4 +1,5 @@
 # international-airpassengers-project
+ my submission : https://colab.research.google.com/github/SDAIAAcademy/international-airpassengers-project/blob/main/project.ipynb
 
 Capstone for the SDAIA Time Series course: the full pipeline — exploration,
 decomposition, benchmark floor, model through the framework (AutoGluon),
