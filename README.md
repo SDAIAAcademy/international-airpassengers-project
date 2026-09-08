@@ -21,6 +21,14 @@ cross-validation, report — on the Box & Jenkins AirPassengers series
 on GitHub, not just in a runtime. Deadline: **00:00, Tuesday 8 September
 2026**.
 
+## The write-up
+
+- **[index.html](index.html)** — a one-page walkthrough of the finished analysis:
+  the shape, the floor, the harness verdict over eight rolling origins, where each
+  model fails cell by cell, and the interval honesty. Every number on it is
+  recomputed by `site/build_page.py` at build time, so the page cannot drift from
+  the notebook. Rebuild with `python3 site/build_page.py`.
+
 ## Files
 
 - `project.ipynb` — the starter notebook; the graded deliverable
