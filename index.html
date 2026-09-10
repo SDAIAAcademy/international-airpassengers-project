@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Air passengers — forecasting capstone</title>
+<style>
+  :root{
+    --ink:#1a1a1a; --muted:#5b5b5b; --line:#e3e3e3; --bg:#fafaf7;
+    --accent:#c2610e; --accent-soft:#fbe9da; --good:#1f6f3b; --bad:#9a2b2b;
+    --card:#ffffff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+       line-height:1.6;font-size:17px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto;padding:0 22px 80px}
+  header{padding:54px 0 26px;border-bottom:1px solid var(--line);margin-bottom:34px}
+  .eyebrow{color:var(--accent);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:12px;margin-bottom:10px}
+  h1{font-size:2.05rem;line-height:1.15;margin:0 0 14px;letter-spacing:-.01em}
+  .lede{font-size:1.12rem;color:var(--muted);margin:0;max-width:62ch}
+  h2{font-size:1.4rem;margin:42px 0 6px;letter-spacing:-.01em}
+  h3{font-size:1.08rem;margin:26px 0 4px;color:var(--muted);font-weight:600}
+  p{margin:0 0 14px}
+  .verdict{background:var(--accent-soft);border-left:4px solid var(--accent);
+           padding:18px 20px;border-radius:8px;margin:18px 0 8px}
+  .verdict .big{font-size:1.5rem;font-weight:700;display:block;margin-bottom:2px}
+  .verdict .num{color:var(--accent);font-weight:700}
+  table{width:100%;border-collapse:collapse;margin:18px 0 6px;font-size:.95rem;background:var(--card)}
+  th,td{padding:9px 12px;text-align:right;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  th{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;background:#f3f1ec}
+  tr.win td{background:#fbf3e9;font-weight:600}
+  tr.floor td{color:var(--muted)}
+  td .tag{font-size:.72rem;color:var(--muted);font-weight:400;display:block}
+  .metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .stat .v{font-size:1.7rem;font-weight:700;letter-spacing:-.02em}
+  .stat .l{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  figure{margin:26px 0 6px}
+  figure img{width:100%;border-radius:8px;border:1px solid var(--line);background:#fff;display:block}
+  figcaption{font-size:.82rem;color:var(--muted);margin-top:7px;text-align:center}
+  .callout{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:18px 0}
+  .callout h3{margin-top:0}
+  .pill{display:inline-block;font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:20px;
+        background:#eee;color:#444;margin-left:6px;vertical-align:middle}
+  .pill.bad{background:#f3dada;color:var(--bad)}
+  .pill.ok{background:#dcefe0;color:var(--good)}
+  .step{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:18px 20px;margin-top:14px}
+  footer{margin-top:54px;padding-top:20px;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+  code{background:#f0eee9;padding:1px 6px;border-radius:4px;font-size:.9em}
+  a{color:var(--accent)}
+  @media(max-width:560px){.metric-grid{grid-template-columns:1fr}.stat .v{font-size:1.4rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">SDAIA · Time Series Capstone</div>
+  <h1>From shape to judgement: forecasting international air passengers</h1>
+  <p class="lede">The full course pipeline on the Box &amp; Jenkins AirPassengers series (1949–1960): diagnose it, set a benchmark floor, shortlist through the framework, judge over eight rolling origins, and report — for a manager who never opens the notebook.</p>
+</header>
+
+<div class="verdict">
+  <span class="big">Ship AutoARIMA.</span>
+  It halves the floor's forecast error on the same eight rolling-origin folds —
+  <span class="num">MASE 0.66 vs 1.31</span> — and wins on the whole distribution, not just the point forecast. The 80% band still under-covers (68% vs the promised 80%), so the band needs calibration before it is trusted for decisions.
+</div>
+
+<div class="metric-grid">
+  <div class="stat"><div class="v">144</div><div class="l">months · no gaps</div></div>
+  <div class="stat"><div class="v">1.00</div><div class="l">trend strength</div></div>
+  <div class="stat"><div class="v">0.98</div><div class="l">seasonal strength</div></div>
+</div>
+
+<h2>The harness table</h2>
+<p>Every number below comes out of one place: the rolling-origin harness — eight folds, twelve months each, step twelve — with each fold's error scaled against only the history that fold was allowed to see. No single holdout is used as evidence for a ranking.</p>
+
+<table>
+  <thead>
+    <tr><th>Model</th><th>MASE ↓</th><th>RMSSE ↓</th><th>Scaled CRPS ↓</th><th>80% coverage</th></tr>
+  </thead>
+  <tbody>
+    <tr class="floor"><td>SeasonalNaive <span class="tag">the floor</span></td><td>1.31</td><td>1.25</td><td>0.062</td><td>0.51</td></tr>
+    <tr class="win"><td>AutoARIMA <span class="tag">ship this</span></td><td>0.66</td><td>0.70</td><td>0.034</td><td>0.68</td></tr>
+    <tr><td>AutoTheta</td><td>0.90</td><td>0.99</td><td>0.046</td><td>0.59</td></tr>
+    <tr><td>AutoETS</td><td>0.95</td><td>1.00</td><td>0.050</td><td>0.49</td></tr>
+    <tr><td>Naive <span class="tag">benchmark</span></td><td>2.12</td><td>2.45</td><td>0.110</td><td>0.69</td></tr>
+  </tbody>
+</table>
+<p style="font-size:.85rem;color:var(--muted);margin-top:6px">Naive's higher coverage (0.69) is not a win — its MASE of 2.12 makes the band wide enough to catch anything and tell nothing.</p>
+
+<h2>Diagnosis</h2>
+<p>Twelve years of monthly growth with no gaps: the level rises roughly exponentially, and the size of the yearly swing grows with the level, so the seasonality is multiplicative. There is a clear annual cycle peaking in the northern-hemisphere summer, and a small residual that does not repeat the same way twice.</p>
+
+<figure>
+  <img src="img_series.png" alt="Air passengers time series">
+  <figcaption>The series, 1949–1960. Growth is exponential; the seasonal swing grows with the level.</figcaption>
+</figure>
+
+<div class="metric-grid">
+  <div class="stat"><div class="v">3.76×</div><div class="l">level growth, 12 yrs</div></div>
+  <div class="stat"><div class="v">0.76</div><div class="l">ACF at lag 12</div></div>
+  <div class="stat"><div class="v">2.3e-43</div><div class="l">Ljung-Box p (floor)</div></div>
+</div>
+
+<h3>STL decomposition</h3>
+<figure>
+  <img src="img_stl.png" alt="STL decomposition">
+  <figcaption>Additive STL, period 12. The trend does the work; the remainder is small — but it is structured, not noise.</figcaption>
+</figure>
+
+<h3>Autocorrelation</h3>
+<figure>
+  <img src="img_acf.png" alt="ACF">
+  <figcaption>The lag-12 spike is the year; the slow decay from lag 1 is the trend. A seasonal differencing removes the 12-month spike but leaves a trend.</figcaption>
+</figure>
+
+<h2>The floor and what it leaves</h2>
+<p>The seasonal naive is the first model on any series — the thing everything else has to beat. Its residuals are <code>y_t − y_{t-12}</code>, what repeating last year leaves on the table. Ljung-Box rejects white noise at lags 12 and 24 with p-values near 10⁻⁴³: the floor leaves real structure behind, mostly the trend and the multiplicative growth it cannot represent.</p>
+
+<figure>
+  <img src="img_fan.png" alt="Floor fan chart">
+  <figcaption>The floor's 24-month fan. The band is narrow because last year is a confident guess — but it is centred low, because the series grows and the floor repeats an old level.</figcaption>
+</figure>
+
+<h2>The framework: AutoGluon</h2>
+<p>Before the harness, AutoGluon fit a zoo of five models (Naive, SeasonalNaive, AutoETS, AutoARIMA, Theta) plus an ensemble it added itself, on a single 12-month holdout. The leaderboard's <code>score_val</code> is negative because AutoGluon stores the negated MASE so that larger-is-better; it scored six models on one internal split. So that table could shortlist candidates but could not rank AutoARIMA ahead of Theta by the 0.05 MASE that separated them — one window is not a ranking. The rolling-origin harness turns the shortlist into a ranking, and confirms it: AutoARIMA first, the floor last, the trend-aware models between.</p>
+
+<h2>Read the table</h2>
+<div class="callout">
+  <p style="margin:0">The harness confirms the leaderboard's shortlist and then moves it. <strong>AutoARIMA beats the floor on all three metrics</strong> — MASE, RMSSE, and scaled CRPS — so it wins the point forecast and the distribution. AutoTheta and AutoETS also beat the floor on point forecast and CRPS, so every real model in the zoo beats the seasonal naive.</p>
+  <p style="margin:0">But the distribution half is a loss for all of them: the floor's 80% band covers only 51% of held-out points; AutoARIMA reaches 68% and AutoTheta 59% — closer to nominal, but still short of 80%. The honest verdict: <strong>AutoARIMA wins on accuracy; every band is too narrow; none is yet honest.</strong></p>
+</div>
+
+<figure>
+  <img src="img_mase.png" alt="MASE comparison">
+  <figcaption>MASE across the eight folds. AutoARIMA halves the floor's error.</figcaption>
+</figure>
+
+<figure>
+  <img src="img_coverage.png" alt="Coverage comparison">
+  <figcaption>Every 80% band falls short of the nominal 80% coverage. The floor's band is not just narrow — it is centred wrong.</figcaption>
+</figure>
+
+<h2>The intervals</h2>
+<p>AutoARIMA's 80% band is about 44,000 passengers wide on average (around a mean level of 280,000), narrower than the floor's 78,000 — and yet it covers better, 68% vs 51%. That is the band doing two things at once: a sharper, better-centred forecast and a tighter band. Both numbers are honest because they are measured on held-out folds the model never trained on.</p>
+<p>But the verdict is <strong>not yet honest at the nominal level</strong>: 68% is short of the 80% the band claims. The band is well-shaped but under-calibrated — right on average, wrong on width.</p>
+
+<h2>The residuals</h2>
+<p>What AutoARIMA still misses is the distribution: its 68% coverage says the residuals are not yet the well-behaved, symmetric noise a calibrated interval assumes. The point forecast is good; the uncertainty around it is still too narrow — the symptom of a band fit to residuals that are slightly under-dispersed relative to what actually lands outside them.</p>
+
+<h2>One change</h2>
+<div class="step">
+  <strong>Add conformal (split-conformal) intervals on top of AutoARIMA's point forecast,</strong> recalibrated on the same rolling-origin folds. The point forecast is already good enough to ship; the gap is purely the band. Conformal calibration should move realised coverage toward 80%, and the harness will measure the trade-off in width — no new model, no new data, just a better-calibrated band.
+</div>
+
+<footer>
+  Series: Box &amp; Jenkins AirPassengers, 1949-01 to 1960-12 (144 months). All metrics from the eight-window rolling-origin harness through <code>coursekit.scoring</code>. Solution notebook and full report:
+  <a href="https://github.com/MOHAMMEDALAHMADI1/international-airpassengers-project">github.com/MOHAMMEDALAHMADI1/international-airpassengers-project</a>
+</footer>
+
+</div>
+</body>
+</html>
